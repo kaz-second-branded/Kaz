@@ -37,6 +37,8 @@
 
 <script src="firebase.js"></script>
 <script>
+const IMGBB_KEY = "450fadf17da34b9423ba7a95051103f9";
+
 function login(){
  auth.signInWithEmailAndPassword(email.value,pass.value)
  .then(()=>alert("Login berhasil"))
@@ -45,18 +47,32 @@ function login(){
 
 function upload(){
  const file=img.files[0];
- const ref=storage.ref("produk/"+Date.now()+"_"+file.name);
+ if(!file) return alert("Pilih gambar dulu");
 
- ref.put(file).then(()=>{
-  ref.getDownloadURL().then(url=>{
-   db.collection("products").add({
+ const form=new FormData();
+ form.append("image",file);
+
+ fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`,{
+  method:"POST",
+  body:form
+ })
+ .then(res=>res.json())
+ .then(data=>{
+  const url=data.data.url;
+
+  db.collection("products").add({
     name:name.value,
     price:Number(price.value),
     stock:Number(stock.value),
     img:url
-   });
-   alert("Produk ditambahkan");
   });
+
+  alert("Produk berhasil ditambahkan");
+  name.value=price.value=stock.value="";
+ })
+ .catch(err=>{
+  alert("Upload gagal");
+  console.log(err);
  });
 }
 
