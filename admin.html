@@ -1,28 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-<title>Admin Kazz Second</title>
+<meta charset="UTF-8">
+<title>Admin Kazz Second Branded</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body style="padding:30px">
 
 <h2>Login Admin</h2>
-<input id="email" placeholder="Email"><br><br>
+
+<input id="email" type="email" placeholder="Email admin"><br><br>
 <input id="pass" type="password" placeholder="Password"><br><br>
-<button onclick="login()">Login</button>
+<button type="button" onclick="login()">Login</button>
 
 <hr>
 
 <h2>Tambah Produk</h2>
+
 <input id="name" placeholder="Nama Produk"><br><br>
-<input id="price" placeholder="Harga"><br><br>
+<input id="price" type="number" placeholder="Harga"><br><br>
 <input id="stock" type="number" placeholder="Stok"><br><br>
 <input type="file" id="img"><br><br>
-<button onclick="upload()">Upload Produk</button>
+<button type="button" onclick="upload()">Upload Produk</button>
 
 <hr>
 
 <h2>Dashboard Stok</h2>
+
 <table>
 <thead>
 <tr>
@@ -35,77 +39,104 @@
 <tbody id="table"></tbody>
 </table>
 
+<!-- FIREBASE -->
 <script src="firebase.js"></script>
+
 <script>
+/* ================= IMGBB ================= */
 const IMGBB_KEY = "450fadf17da34b9423ba7a95051103f9";
 
+/* ================= LOGIN ================= */
 function login(){
- auth.signInWithEmailAndPassword(email.value,pass.value)
- .then(()=>alert("Login berhasil"))
- .catch(e=>alert(e.message));
-}
+  console.log("Tombol login ditekan");
 
-function upload(){
- const file=img.files[0];
- if(!file) return alert("Pilih gambar dulu");
-
- const form=new FormData();
- form.append("image",file);
-
- fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`,{
-  method:"POST",
-  body:form
- })
- .then(res=>res.json())
- .then(data=>{
-  const url=data.data.url;
-
-  db.collection("products").add({
-    name:name.value,
-    price:Number(price.value),
-    stock:Number(stock.value),
-    img:url
+  auth.signInWithEmailAndPassword(
+    document.getElementById("email").value,
+    document.getElementById("pass").value
+  )
+  .then(()=>{
+    alert("Login berhasil");
+  })
+  .catch(err=>{
+    alert(err.message);
+    console.log(err);
   });
-
-  alert("Produk berhasil ditambahkan");
-  name.value=price.value=stock.value="";
- })
- .catch(err=>{
-  alert("Upload gagal");
-  console.log(err);
- });
 }
 
-const tbody=document.getElementById("table");
+/* ================= UPLOAD PRODUK ================= */
+function upload(){
+  if(!auth.currentUser){
+    alert("Login dulu sebagai admin");
+    return;
+  }
 
-db.collection("products").onSnapshot(snap=>{
- tbody.innerHTML="";
- snap.forEach(doc=>{
-  const p=doc.data();
-  tbody.innerHTML+=`
-   <tr style="opacity:${p.stock<=0?.5:1}">
-    <td>${p.name}</td>
-    <td>Rp ${p.price}</td>
-    <td>${p.stock<=0?"SOLD OUT":p.stock}</td>
-    <td>
-     <button onclick="update('${doc.id}',1)">+</button>
-     <button onclick="update('${doc.id}',-1)">−</button>
-     <button onclick="del('${doc.id}')">🗑</button>
-    </td>
-   </tr>
-  `;
- });
+  const file = img.files[0];
+  if(!file){
+    alert("Pilih gambar dulu");
+    return;
+  }
+
+  const form = new FormData();
+  form.append("image", file);
+
+  fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
+    method: "POST",
+    body: form
+  })
+  .then(res => res.json())
+  .then(data => {
+    const url = data.data.url;
+
+    db.collection("products").add({
+      name: name.value,
+      price: Number(price.value),
+      stock: Number(stock.value),
+      img: url
+    });
+
+    alert("Produk berhasil ditambahkan");
+    name.value = price.value = stock.value = "";
+    img.value = "";
+  })
+  .catch(err => {
+    alert("Upload gagal");
+    console.log(err);
+  });
+}
+
+/* ================= DASHBOARD STOK ================= */
+const tbody = document.getElementById("table");
+
+db.collection("products").onSnapshot(snapshot=>{
+  tbody.innerHTML = "";
+  snapshot.forEach(doc=>{
+    const p = doc.data();
+    tbody.innerHTML += `
+      <tr style="opacity:${p.stock<=0?0.5:1}">
+        <td>${p.name}</td>
+        <td>Rp ${p.price}</td>
+        <td>${p.stock<=0?"SOLD OUT":p.stock}</td>
+        <td>
+          <button onclick="updateStock('${doc.id}',1)">+</button>
+          <button onclick="updateStock('${doc.id}',-1)">−</button>
+          <button onclick="remove('${doc.id}')">🗑</button>
+        </td>
+      </tr>
+    `;
+  });
 });
 
-function update(id,val){
- db.collection("products").doc(id)
- .update({stock:firebase.firestore.FieldValue.increment(val)});
+function updateStock(id,val){
+  db.collection("products").doc(id)
+  .update({
+    stock: firebase.firestore.FieldValue.increment(val)
+  });
 }
 
-function del(id){
- if(confirm("Hapus produk?")){
-  db.collection("products").doc(id).delete();
- }
+function remove(id){
+  if(confirm("Hapus produk ini?")){
+    db.collection("products").doc(id).delete();
+  }
 }
 </script>
 
