@@ -22,14 +22,18 @@
   <input id="pname" placeholder="Nama Produk">
   <input id="pprice" placeholder="Harga">
   <input id="pstock" placeholder="Stok">
-  <input id="pimage" placeholder="Link Foto (IMGBB / IMGG)">
+
+  <!-- UPLOAD FILE -->
+  <input type="file" id="pimageFile" accept="image/*">
 
   <button onclick="addProduct()">Tambah Produk</button>
+
+  <p id="uploadStatus"></p>
 
   <div id="adminList" class="grid"></div>
 </div>
 
-<!-- FIREBASE CDN -->
+<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
