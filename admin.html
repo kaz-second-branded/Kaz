@@ -1,43 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Admin Kazz</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Admin Kazz</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>
-  <h2>Admin Login</h2>
-</header>
-
-<div class="section" id="loginBox">
-  <input id="username" placeholder="Username">
-  <input id="password" type="password" placeholder="Password">
+<div id="loginBox">
+  <input id="user" placeholder="Username">
+  <input id="pass" type="password" placeholder="Password">
   <button onclick="login()">Login</button>
 </div>
 
-<div class="section" id="dashboard" style="display:none">
-  <h2>Dashboard Produk</h2>
-
-  <input id="pname" placeholder="Nama Produk">
-  <input id="pprice" placeholder="Harga">
-  <input id="pstock" placeholder="Stok">
-
-  <!-- UPLOAD FILE -->
-  <input type="file" id="pimageFile" accept="image/*">
-
-  <button onclick="addProduct()">Tambah Produk</button>
-
-  <p id="uploadStatus"></p>
-
-  <div id="adminList" class="grid"></div>
+<div id="dashboard" style="display:none">
+  <h2>Tambah Produk</h2>
+  <input id="nama" placeholder="Nama Produk">
+  <input id="harga" placeholder="Harga">
+  <input id="stok" placeholder="Stok">
+  <input type="file" id="foto">
+  <button onclick="upload()">Upload Produk</button>
+  <hr>
+  <div id="adminList"></div>
 </div>
 
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-<script src="firebase.js"></script>
-<script src="admin.js"></script>
+<script type="module" src="firebase.js"></script>
+<script type="module" src="admin.js"></script>
 </body>
 </html>
