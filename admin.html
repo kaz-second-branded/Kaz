@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Kazz Second</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body style="padding:30px">
+
+<h2>Login Admin</h2>
+<input id="email" placeholder="Email"><br><br>
+<input id="pass" type="password" placeholder="Password"><br><br>
+<button onclick="login()">Login</button>
+
+<hr>
+
+<h2>Tambah Produk</h2>
+<input id="name" placeholder="Nama Produk"><br><br>
+<input id="price" placeholder="Harga"><br><br>
+<input id="stock" type="number" placeholder="Stok"><br><br>
+<input type="file" id="img"><br><br>
+<button onclick="upload()">Upload Produk</button>
+
+<hr>
+
+<h2>Dashboard Stok</h2>
+<table>
+<thead>
+<tr>
+ <th>Produk</th>
+ <th>Harga</th>
+ <th>Stok</th>
+ <th>Aksi</th>
+</tr>
+</thead>
+<tbody id="table"></tbody>
+</table>
+
+<script src="firebase.js"></script>
+<script>
+function login(){
+ auth.signInWithEmailAndPassword(email.value,pass.value)
+ .then(()=>alert("Login berhasil"))
+ .catch(e=>alert(e.message));
+}
+
+function upload(){
+ const file=img.files[0];
+ const ref=storage.ref("produk/"+Date.now()+"_"+file.name);
+
+ ref.put(file).then(()=>{
+  ref.getDownloadURL().then(url=>{
+   db.collection("products").add({
+    name:name.value,
+    price:Number(price.value),
+    stock:Number(stock.value),
+    img:url
+   });
+   alert("Produk ditambahkan");
+  });
+ });
+}
+
+const tbody=document.getElementById("table");
+
+db.collection("products").onSnapshot(snap=>{
+ tbody.innerHTML="";
+ snap.forEach(doc=>{
+  const p=doc.data();
+  tbody.innerHTML+=`
+   <tr style="opacity:${p.stock<=0?.5:1}">
+    <td>${p.name}</td>
+    <td>Rp ${p.price}</td>
+    <td>${p.stock<=0?"SOLD OUT":p.stock}</td>
+    <td>
+     <button onclick="update('${doc.id}',1)">+</button>
+     <button onclick="update('${doc.id}',-1)">−</button>
+     <button onclick="del('${doc.id}')">🗑</button>
+    </td>
+   </tr>
+  `;
+ });
+});
+
+function update(id,val){
+ db.collection("products").doc(id)
+ .update({stock:firebase.firestore.FieldValue.increment(val)});
+}
+
+function del(id){
+ if(confirm("Hapus produk?")){
+  db.collection("products").doc(id).delete();
+ }
+}
+</script>
+
+</body>
+</html>
