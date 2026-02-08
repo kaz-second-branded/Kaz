@@ -1,5 +1,6 @@
 const USER = "admin";
 const PASS = "12345";
+const IMGBB_API = "450fadf17da34b9423ba7a95051103f9";
 
 function login(){
   const u = document.getElementById("username").value;
@@ -14,14 +15,46 @@ function login(){
   }
 }
 
-function addProduct(){
+async function addProduct(){
   const name = document.getElementById("pname").value;
   const price = document.getElementById("pprice").value;
   const stock = document.getElementById("pstock").value;
-  const image = document.getElementById("pimage").value;
+  const fileInput = document.getElementById("pimageFile");
+  const status = document.getElementById("uploadStatus");
 
-  db.ref("products").push({ name, price, stock, image });
-  alert("Produk ditambahkan");
+  if(!fileInput.files[0]){
+    alert("Pilih foto dulu");
+    return;
+  }
+
+  status.innerText = "Uploading gambar...";
+
+  const formData = new FormData();
+  formData.append("image", fileInput.files[0]);
+
+  try{
+    const res = await fetch(
+      `https://api.imgbb.com/1/upload?key=${IMGBB_API}`,
+      { method:"POST", body: formData }
+    );
+
+    const data = await res.json();
+    const imageUrl = data.data.url;
+
+    db.ref("products").push({
+      name,
+      price,
+      stock,
+      image: imageUrl
+    });
+
+    status.innerText = "Produk berhasil ditambahkan ✅";
+    fileInput.value = "";
+
+  }catch(err){
+    status.innerText = "Upload gagal ❌";
+    console.error(err);
+  }
 }
 
 function loadProducts(){
@@ -50,4 +83,4 @@ function loadProducts(){
 
 function deleteProduct(id){
   db.ref("products/" + id).remove();
-}
+    }
