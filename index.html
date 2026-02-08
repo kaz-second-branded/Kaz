@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Kazz Second Branded</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="cart">🛒 <span id="cartCount">0</span></div>
+
+<header>
+<h1>KAZZ SECOND BRANDED</h1>
+<p>Outfit kekinian • Sepatu • Hoodie • Jaket • Crewneck</p>
+<p>📞 08xxxxxxxxxx</p>
+<button class="btn" onclick="checkout()">Checkout WhatsApp</button>
+</header>
+
+<section class="grid" id="products"></section>
+
+<section style="padding:30px;text-align:center">
+<h2>Mengapa Memilih Kami?</h2>
+<p>Produk second pilihan, kondisi terjamin, update rutin, harga bersahabat, dan bisa COD.</p>
+</section>
+
+<section style="padding:30px">
+<h2>Lokasi Toko</h2>
+<iframe 
+ src="https://www.google.com/maps?q=-6.9729,106.0952&output=embed"
+ style="width:100%;height:300px;border:0;border-radius:10px">
+</iframe><br><br>
+<a href="https://maps.google.com" target="_blank">📍 Buka Google Maps</a>
+</section>
+
+<footer>
+<a href="#">Tentang Saya</a>
+<a href="#">Profil Toko</a>
+<a href="#">Hubungi Kami</a>
+<p>© 2026 Kazz Second Branded</p>
+</footer>
+
+<script src="firebase.js"></script>
+<script>
+let cart=[];
+
+db.collection("products").onSnapshot(snap=>{
+ const el=document.getElementById("products");
+ el.innerHTML="";
+ snap.forEach(doc=>{
+  const p=doc.data();
+  const sold=p.stock<=0;
+
+  el.innerHTML+=`
+   <div class="card ${sold?'sold':''}">
+    <img src="${p.img}">
+    <h4>${p.name}</h4>
+    <p>Rp ${p.price}</p>
+    <p>${sold?"❌ SOLD OUT":"Stok: "+p.stock}</p>
+    <button ${sold?"disabled":""}
+     onclick='add("${doc.id}","${p.name}",${p.price})'>
+     ${sold?"Habis":"Tambah"}
+    </button>
+   </div>
+  `;
+ });
+});
+
+function add(id,name,price){
+ cart.push({id,name,price});
+ document.getElementById("cartCount").innerText=cart.length;
+}
+
+function checkout(){
+ if(cart.length===0)return alert("Keranjang kosong");
+
+ let msg="Halo Kazz Second, saya mau order:%0A";
+ cart.forEach(c=>{
+  msg+=`- ${c.name} Rp ${c.price}%0A`;
+  db.collection("products").doc(c.id)
+   .update({stock:firebase.firestore.FieldValue.increment(-1)});
+ });
+ window.open(`https://wa.me/628XXXXXXXXXX?text=${msg}`);
+ cart=[];
+ document.getElementById("cartCount").innerText=0;
+}
+</script>
+
+</body>
+</html>
