@@ -1,30 +1,23 @@
-function openMaps(){
-  window.open("https://maps.app.goo.gl/", "_blank");
-}
+import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-const grid = document.getElementById("productGrid");
+const list = document.getElementById("productList");
 
-db.ref("products").on("value", snapshot => {
-  grid.innerHTML = "";
-  snapshot.forEach(item => {
-    const p = item.val();
-
-    const div = document.createElement("div");
-    div.className = "card";
-
-    div.innerHTML = `
-      <img src="${p.image}">
-      <h3>${p.name}</h3>
-      <p>Rp ${p.price}</p>
-      <p>${p.stock > 0 ? "Stok: " + p.stock : "SOLD OUT"}</p>
-      <button onclick="orderWA('${p.name}')">Order WhatsApp</button>
+onValue(ref(db,"produk"), snap=>{
+  list.innerHTML="";
+  snap.forEach(p=>{
+    const d=p.val();
+    list.innerHTML+=`
+      <div class="card">
+        <img src="${d.img}">
+        <h3>${d.nama}</h3>
+        <p>Rp ${d.harga}</p>
+        <p class="${d.stok>0?'stok':'sold'}">
+          ${d.stok>0?'Stok '+d.stok:'SOLD OUT'}
+        </p>
+        ${d.stok>0?`
+          <button onclick="addToCart('${d.nama}','${d.harga}')">+ Keranjang</button>
+        `:""}
+      </div>
     `;
-
-    grid.appendChild(div);
   });
 });
-
-function orderWA(name){
-  const text = encodeURIComponent("Halo kak, saya mau order: " + name);
-  window.open("https://wa.me/62XXXXXXXXXX?text=" + text);
-}
