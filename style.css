@@ -1,6 +1,6 @@
 body{
  margin:0;
- font-family:Montserrat,Arial;
+ font-family:Arial, sans-serif;
  background:#0f0f0f;
  color:#fff
 }
@@ -9,12 +9,10 @@ header{
  text-align:center
 }
 header h1{
- font-size:42px;
+ font-size:40px;
  letter-spacing:2px
 }
-header p{
- opacity:.8
-}
+header p{opacity:.8}
 
 .btn{
  background:#fff;
@@ -64,12 +62,8 @@ header p{
  border:none
 }
 
-.sold{
- opacity:.5
-}
-.sold img{
- filter:grayscale(100%)
-}
+.sold{opacity:.5}
+.sold img{filter:grayscale(100%)}
 button:disabled{
  background:#555;
  color:#999
@@ -86,9 +80,7 @@ th,td{
  border-bottom:1px solid #333;
  text-align:center
 }
-th{
- background:#000
-}
+th{background:#000}
 
 footer{
  background:#000;
