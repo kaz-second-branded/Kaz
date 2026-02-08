@@ -1,0 +1,8 @@
+{
+  "name": "Kazz Second Branded",
+  "short_name": "Kazz",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000"
+}
