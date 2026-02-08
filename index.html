@@ -19,12 +19,12 @@
 
 <section style="padding:30px;text-align:center">
 <h2>Mengapa Memilih Kami?</h2>
-<p>Produk second pilihan, kondisi terjamin, update rutin, harga bersahabat, dan bisa COD.</p>
+<p>Produk second branded pilihan, kondisi masih sangat layak, harga ramah kantong, update rutin.</p>
 </section>
 
 <section style="padding:30px">
 <h2>Lokasi Toko</h2>
-<iframe 
+<iframe
  src="https://www.google.com/maps?q=-6.9729,106.0952&output=embed"
  style="width:100%;height:300px;border:0;border-radius:10px">
 </iframe><br><br>
@@ -70,7 +70,7 @@ function add(id,name,price){
 }
 
 function checkout(){
- if(cart.length===0)return alert("Keranjang kosong");
+ if(cart.length===0) return alert("Keranjang kosong");
 
  let msg="Halo Kazz Second, saya mau order:%0A";
  cart.forEach(c=>{
@@ -78,6 +78,7 @@ function checkout(){
   db.collection("products").doc(c.id)
    .update({stock:firebase.firestore.FieldValue.increment(-1)});
  });
+
  window.open(`https://wa.me/628XXXXXXXXXX?text=${msg}`);
  cart=[];
  document.getElementById("cartCount").innerText=0;
